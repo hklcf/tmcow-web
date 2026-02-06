@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>屯門騎牛預約系統</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#d4a017;--red:#c0392b;--dark:#1a1209;--cream:#f5e6c8;
+  --brown:#5c3a1e;--green:#2d5a27;--orange:#e67e22;
+}
+body{
+  font-family:'Noto Serif TC',serif;
+  background:var(--dark);
+  color:var(--cream);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse at 20% 50%,rgba(93,58,30,.4),transparent 60%),
+    radial-gradient(ellipse at 80% 20%,rgba(212,160,23,.15),transparent 50%),
+    repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(245,230,200,.02) 40px,rgba(245,230,200,.02) 41px);
+  pointer-events:none;z-index:0;
+}
+
+.container{max-width:900px;margin:0 auto;padding:20px;position:relative;z-index:1}
+
+/* Header */
+header{text-align:center;padding:40px 20px 30px;position:relative}
+header::before{
+  content:'🐂';font-size:80px;display:block;
+  animation:bull-walk 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 20px rgba(212,160,23,.4));
+}
+@keyframes bull-walk{
+  0%,100%{transform:translateX(0) scaleX(1)}
+  25%{transform:translateX(30px) scaleX(1) rotate(3deg)}
+  50%{transform:translateX(0) scaleX(1)}
+  75%{transform:translateX(-30px) scaleX(-1) rotate(-3deg)}
+}
+h1{
+  font-family:'ZCOOL KuaiLe',cursive;
+  font-size:clamp(2rem,6vw,3.5rem);
+  color:var(--gold);
+  text-shadow:0 0 30px rgba(212,160,23,.5),0 4px 0 var(--brown);
+  letter-spacing:4px;margin:10px 0;
+}
+.subtitle{
+  font-size:1.1rem;color:var(--orange);opacity:.9;
+  border-top:2px solid var(--gold);border-bottom:2px solid var(--gold);
+  display:inline-block;padding:8px 30px;margin-top:10px;
+}
+
+/* Notice Banner */
+.notice{
+  background:linear-gradient(135deg,var(--red),#8b1a1a);
+  border:2px solid var(--gold);border-radius:12px;
+  padding:16px 24px;margin:24px 0;text-align:center;
+  font-size:.95rem;line-height:1.7;
+  animation:pulse-border 2s ease-in-out infinite;
+  box-shadow:0 0 30px rgba(192,57,43,.3);
+}
+@keyframes pulse-border{
+  0%,100%{box-shadow:0 0 20px rgba(192,57,43,.3)}
+  50%{box-shadow:0 0 40px rgba(192,57,43,.6)}
+}
+.notice strong{color:var(--gold);font-size:1.1rem}
+
+/* Stats */
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:16px;margin:28px 0;
+}
+.stat-card{
+  background:linear-gradient(145deg,rgba(92,58,30,.6),rgba(26,18,9,.8));
+  border:1px solid rgba(212,160,23,.3);border-radius:12px;
+  padding:20px;text-align:center;
+  transition:transform .3s,box-shadow .3s;
+}
+.stat-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(212,160,23,.2)}
+.stat-num{font-family:'ZCOOL KuaiLe',cursive;font-size:2.2rem;color:var(--gold)}
+.stat-label{font-size:.85rem;color:rgba(245,230,200,.7);margin-top:4px}
+
+/* Form */
+.form-section{
+  background:linear-gradient(160deg,rgba(92,58,30,.4),rgba(26,18,9,.9));
+  border:1px solid rgba(212,160,23,.25);border-radius:16px;
+  padding:36px;margin:28px 0;
+  backdrop-filter:blur(10px);
+}
+.form-title{
+  font-family:'ZCOOL KuaiLe',cursive;font-size:1.8rem;
+  color:var(--gold);text-align:center;margin-bottom:28px;
+  position:relative;
+}
+.form-title::after{
+  content:'';display:block;width:80px;height:3px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:10px auto 0;
+}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+.field label{font-size:.9rem;color:var(--gold);font-weight:700}
+.field input,.field select,.field textarea{
+  background:rgba(26,18,9,.8);border:1px solid rgba(212,160,23,.3);
+  border-radius:8px;padding:12px 14px;color:var(--cream);
+  font-family:'Noto Serif TC',serif;font-size:.95rem;
+  transition:border-color .3s,box-shadow .3s;
+  outline:none;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 15px rgba(212,160,23,.2);
+}
+.field select option{background:var(--dark);color:var(--cream)}
+textarea{resize:vertical;min-height:80px}
+
+/* Bull Selection */
+.bull-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:16px;margin:20px 0;
+}
+.bull-card{
+  background:rgba(26,18,9,.7);border:2px solid rgba(212,160,23,.2);
+  border-radius:14px;padding:20px;cursor:pointer;
+  transition:all .3s;position:relative;overflow:hidden;
+}
+.bull-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(212,160,23,.1),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.bull-card:hover::before,.bull-card.selected::before{opacity:1}
+.bull-card:hover{border-color:rgba(212,160,23,.5);transform:scale(1.02)}
+.bull-card.selected{
+  border-color:var(--gold);
+  box-shadow:0 0 25px rgba(212,160,23,.3);
+}
+.bull-card.selected::after{
+  content:'✓';position:absolute;top:10px;right:14px;
+  color:var(--gold);font-size:1.4rem;font-weight:900;
+}
+.bull-emoji{font-size:3rem;margin-bottom:8px}
+.bull-name{font-family:'ZCOOL KuaiLe',cursive;font-size:1.3rem;color:var(--gold)}
+.bull-stats{font-size:.8rem;color:rgba(245,230,200,.6);margin-top:6px;line-height:1.6}
+.bull-tag{
+  display:inline-block;padding:2px 10px;border-radius:20px;
+  font-size:.75rem;margin-top:8px;
+}
+.tag-easy{background:rgba(45,90,39,.5);color:#7dcea0}
+.tag-medium{background:rgba(230,126,34,.3);color:var(--orange)}
+.tag-hard{background:rgba(192,57,43,.4);color:#f1948a}
+.tag-legend{background:rgba(212,160,23,.3);color:var(--gold)}
+
+/* Route Selection */
+.route-list{display:flex;flex-direction:column;gap:12px;margin:16px 0}
+.route-item{
+  display:flex;align-items:center;gap:14px;
+  background:rgba(26,18,9,.6);border:1px solid rgba(212,160,23,.15);
+  border-radius:10px;padding:14px 18px;cursor:pointer;
+  transition:all .3s;
+}
+.route-item:hover{border-color:rgba(212,160,23,.4);background:rgba(92,58,30,.3)}
+.route-item.selected{border-color:var(--gold);background:rgba(92,58,30,.4)}
+.route-item input[type=radio]{
+  accent-color:var(--gold);width:18px;height:18px;cursor:pointer;
+}
+.route-info{flex:1}
+.route-name{font-weight:700;color:var(--cream);font-size:1rem}
+.route-desc{font-size:.8rem;color:rgba(245,230,200,.6);margin-top:2px}
+.route-price{
+  font-family:'ZCOOL KuaiLe',cursive;font-size:1.3rem;color:var(--gold);
+  white-space:nowrap;
+}
+
+/* Time Slots */
+.time-slots{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));
+  gap:10px;margin:12px 0;
+}
+.time-slot{
+  background:rgba(26,18,9,.7);border:1px solid rgba(212,160,23,.2);
+  border-radius:8px;padding:10px;text-align:center;cursor:pointer;
+  transition:all .3s;font-size:.9rem;
+}
+.time-slot:hover{border-color:var(--gold);background:rgba(92,58,30,.3)}
+.time-slot.selected{background:rgba(212,160,23,.2);border-color:var(--gold);color:var(--gold);font-weight:700}
+.time-slot.full{
+  opacity:.4;cursor:not-allowed;text-decoration:line-through;
+  pointer-events:none;
+}
+
+/* Insurance */
+.insurance-options{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+.ins-item{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(26,18,9,.5);border:1px solid rgba(212,160,23,.15);
+  border-radius:8px;padding:12px 16px;cursor:pointer;transition:all .3s;
+}
+.ins-item:hover{border-color:rgba(212,160,23,.3)}
+.ins-item input{accent-color:var(--gold);width:16px;height:16px}
+.ins-item label{cursor:pointer;flex:1;font-size:.9rem}
+.ins-price{color:var(--gold);font-weight:700;white-space:nowrap}
+
+/* Submit */
+.btn-submit{
+  display:block;width:100%;padding:18px;margin-top:30px;
+  font-family:'ZCOOL KuaiLe',cursive;font-size:1.5rem;
+  color:var(--dark);background:linear-gradient(135deg,var(--gold),#e8b830);
+  border:none;border-radius:12px;cursor:pointer;
+  transition:all .3s;letter-spacing:3px;
+  box-shadow:0 4px 20px rgba(212,160,23,.4);
+}
+.btn-submit:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 35px rgba(212,160,23,.6);
+  background:linear-gradient(135deg,#e8b830,var(--gold));
+}
+.btn-submit:active{transform:translateY(0)}
+
+/* Modal */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);
+  z-index:1000;align-items:center;justify-content:center;
+  backdrop-filter:blur(5px);
+}
+.modal-overlay.active{display:flex}
+.modal{
+  background:linear-gradient(160deg,#2a1a0a,var(--dark));
+  border:2px solid var(--gold);border-radius:20px;
+  padding:40px;max-width:520px;width:90%;text-align:center;
+  animation:modal-in .4s ease-out;
+  box-shadow:0 0 60px rgba(212,160,23,.3);
+}
+@keyframes modal-in{
+  from{opacity:0;transform:scale(.8) translateY(30px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+.modal h2{font-family:'ZCOOL KuaiLe',cursive;color:var(--gold);font-size:2rem;margin-bottom:6px}
+.modal .ticket-id{color:var(--orange);font-size:.9rem;margin-bottom:20px}
+.modal .details{
+  text-align:left;background:rgba(0,0,0,.3);border-radius:10px;
+  padding:20px;margin:16px 0;line-height:2;font-size:.9rem;
+}
+.modal .details span{color:var(--gold);font-weight:700}
+.modal .warning{
+  color:var(--red);font-size:.8rem;margin-top:14px;
+  padding:10px;border:1px dashed var(--red);border-radius:8px;
+}
+.modal .btn-close{
+  margin-top:20px;padding:12px 40px;
+  font-family:'ZCOOL KuaiLe',cursive;font-size:1.1rem;
+  background:var(--gold);color:var(--dark);border:none;
+  border-radius:8px;cursor:pointer;transition:all .3s;
+}
+.modal .btn-close:hover{background:#e8b830;transform:scale(1.05)}
+
+/* Footer */
+footer{
+  text-align:center;padding:30px;margin-top:20px;
+  border-top:1px solid rgba(212,160,23,.15);
+  font-size:.8rem;color:rgba(245,230,200,.4);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--dark)}
+::-webkit-scrollbar-thumb{background:var(--brown);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+  <h1>屯門騎牛預約系統</h1>
+  <div class="subtitle">🏔️ 入屯門・必騎牛 🏔️</div>
+</header>
+
+<div class="notice">
+  <strong>⚠️ 屯門交通管理局公告</strong><br>
+  根據《屯門特別交通條例》第 87 條，所有進入屯門區域之人士<br>
+  必須以「騎牛」方式通行，違者罰款 $4,980 或社區服務 40 小時。
+</div>
+
+<div class="stats" id="stats"></div>
+
+<!-- STEP 1: Bull Selection -->
+<div class="form-section">
+  <div class="form-title">🐂 第一步：選擇你的坐騎</div>
+  <div class="bull-grid" id="bullGrid"></div>
+</div>
+
+<!-- STEP 2: Route -->
+<div class="form-section">
+  <div class="form-title">🗺️ 第二步：選擇路線</div>
+  <div class="route-list" id="routeList"></div>
+</div>
+
+<!-- STEP 3: Date & Time -->
+<div class="form-section">
+  <div class="form-title">📅 第三步：選擇日期及時段</div>
+  <div class="form-grid">
+    <div class="field">
+      <label for="date">出發日期</label>
+      <input type="date" id="date">
+    </div>
+    <div class="field">
+      <label>天氣偏好</label>
+      <select id="weather">
+        <option value="any">無所謂（真正騎士不怕風雨）</option>
+        <option value="sunny">晴天限定（怕曬可租遮陽蓬）</option>
+        <option value="rainy">雨天限定（泥漿增加刺激感）</option>
+        <option value="typhoon">打風限定（極限模式 +$200）</option>
+      </select>
+    </div>
+  </div>
+  <label style="font-size:.9rem;color:var(--gold);font-weight:700;display:block;margin:16px 0 8px">可用時段</label>
+  <div class="time-slots" id="timeSlots"></div>
+</div>
+
+<!-- STEP 4: Personal Info -->
+<div class="form-section">
+  <div class="form-title">👤 第四步：騎士資料</div>
+  <div class="form-grid">
+    <div class="field">
+      <label for="name">騎士姓名</label>
+      <input type="text" id="name" placeholder="請輸入真實姓名">
+    </div>
+    <div class="field">
+      <label for="phone">聯絡電話</label>
+      <input type="tel" id="phone" placeholder="用於牛隻走失時通知">
+    </div>
+    <div class="field">
+      <label for="weight">體重 (kg)</label>
+      <input type="number" id="weight" placeholder="影響配對牛隻" min="30" max="200">
+    </div>
+    <div class="field">
+      <label for="exp">騎牛經驗</label>
+      <select id="exp">
+        <option value="none">從未騎過（提供免費教學）</option>
+        <option value="beginner">初學者（騎過 1-3 次）</option>
+        <option value="intermediate">中級（經常騎牛出入）</option>
+        <option value="expert">專家（曾代表屯門參賽）</option>
+        <option value="master">宗師（與牛心靈相通）</option>
+      </select>
+    </div>
+    <div class="field full">
+      <label for="notes">特別要求</label>
+      <textarea id="notes" placeholder="例如：要安靜的牛 / 需要安全帶 / 牛要識行紅綠燈 / 希望牛有冷氣..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 5: Insurance -->
+<div class="form-section">
+  <div class="form-title">🛡️ 第五步：保險方案</div>
+  <div class="insurance-options" id="insuranceOptions"></div>
+</div>
+
+<button class="btn-submit" onclick="submitBooking()">🐂 確認預約騎牛 🐂</button>
+
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div style="font-size:4rem;margin-bottom:10px">🎉🐂</div>
+    <h2>預約成功！</h2>
+    <div class="ticket-id" id="ticketId"></div>
+    <div class="details" id="modalDetails"></div>
+    <div class="warning">
+      ⚠️ 請於出發前 30 分鐘到達屯門牛棚集合點報到<br>
+      遲到者需自行追牛，本系統概不負責<br>
+      騎牛期間請勿使用手機，以免驚嚇牛隻
+    </div>
+    <button class="btn-close" onclick="closeModal()">收到，準備騎牛！</button>
+  </div>
+</div>
+
+<footer>
+  © 2026 屯門騎牛管理局 ｜ 本系統純屬虛構惡搞，如有雷同，實屬巧合<br>
+  屯門居民溫馨提示：入屯門唔使騎牛，搭西鐵就得㗎啦 🚇
+</footer>
+
+<script>
+// Data
+const bulls = [
+  { id:'b1', emoji:'🐂', name:'穩重號', desc:'性格溫馴，適合新手', speed:'慢速 (8km/h)', stamina:'★★★★★', temper:'★☆☆☆☆', tag:'easy', tagText:'新手推薦', price:88 },
+  { id:'b2', emoji:'🐃', name:'疾風號', desc:'速度型水牛，風馳電掣', speed:'高速 (25km/h)', stamina:'★★★☆☆', temper:'★★★☆☆', tag:'medium', tagText:'速度優先', price:168 },
+  { id:'b3', emoji:'🦬', name:'霸王號', desc:'力量型野牛，氣勢磅礴', speed:'中速 (15km/h)', stamina:'★★★★★', temper:'★★★★☆', tag:'hard', tagText:'進階挑戰', price:238 },
+  { id:'b4', emoji:'🐂', name:'黃金聖牛', desc:'傳說級坐騎，自帶 BGM', speed:'極速 (40km/h)', stamina:'★★★★★', temper:'★★★★★', tag:'legend', tagText:'傳說坐騎', price:888 },
+];
+
+const routes = [
+  { id:'r1', name:'經典路線：荃灣 → 屯門公路 → 屯門市中心', desc:'全程約 18km，沿途風景優美，設有牛隻休息站', price:0 },
+  { id:'r2', name:'山路線：大欖隧道 → 藍地 → 屯門', desc:'全程約 22km，山路崎嶇，適合有經驗騎士', price:50 },
+  { id:'r3', name:'海景線：青山公路 → 黃金海岸 → 屯門碼頭', desc:'全程約 25km，沿海邊行，牛可以順便飲水', price:80 },
+  { id:'r4', name:'VIP 專線：直升機運牛至屯門上空 → 空降', desc:'全程約 5 分鐘，牛隻配備降落傘（額外收費）', price:2888 },
+];
+
+const timeSlots = [
+  { time:'06:00', label:'清晨 06:00', avail:8 },
+  { time:'07:30', label:'早上 07:30', avail:3 },
+  { time:'09:00', label:'上午 09:00', avail:0 },
+  { time:'10:30', label:'上午 10:30', avail:5 },
+  { time:'12:00', label:'中午 12:00', avail:2 },
+  { time:'14:00', label:'下午 14:00', avail:6 },
+  { time:'15:30', label:'下午 15:30', avail:4 },
+  { time:'17:00', label:'傍晚 17:00', avail:1 },
+  { time:'18:30', label:'黃昏 18:30', avail:7 },
+  { time:'20:00', label:'晚上 20:00', avail:9 },
+];
+
+const insurances = [
+  { id:'i0', name:'裸騎模式（無保險）', desc:'真正的勇者不需要保險', price:0 },
+  { id:'i1', name:'基本保障', desc:'涵蓋跌落牛背、被牛踩腳', price:38 },
+  { id:'i2', name:'全面保障', desc:'涵蓋一切牛相關意外 + 牛隻心理輔導費', price:98 },
+  { id:'i3', name:'豪華白金保障', desc:'包括被牛追、牛暴走、牛罷工、牛失蹤、以及第三方牛損', price:228 },
+];
+
+let selectedBull = null, selectedRoute = null, selectedTime = null, selectedInsurance = 'i0';
+
+// Render Stats
+function renderStats() {
+  const statsData = [
+    { num: '12,847', label: '今日預約人次' },
+    { num: '3,621', label: '可用牛隻' },
+    { num: '99.7%', label: '安全抵達率' },
+    { num: '0.3%', label: '被牛追著跑' },
+  ];
+  document.getElementById('stats').innerHTML = statsData.map(s =>
+    `<div class="stat-card"><div class="stat-num">${s.num}</div><div class="stat-label">${s.label}</div></div>`
+  ).join('');
+}
+
+// Render Bulls
+function renderBulls() {
+  document.getElementById('bullGrid').innerHTML = bulls.map(b =>
+    `<div class="bull-card" data-id="${b.id}" onclick="selectBull('${b.id}')">
+      <div class="bull-emoji">${b.emoji}</div>
+      <div class="bull-name">${b.name}</div>
+      <div class="bull-stats">
+        ${b.desc}<br>
+        速度：${b.speed}<br>
+        耐力：${b.stamina}<br>
+        脾氣：${b.temper}
+      </div>
+      <span class="bull-tag tag-${b.tag}">${b.tagText}</span>
+      <div style="color:var(--gold);font-family:'ZCOOL KuaiLe';font-size:1.2rem;margin-top:8px">$${b.price}</div>
+    </div>`
+  ).join('');
+}
+
+function selectBull(id) {
+  selectedBull = id;
+  document.querySelectorAll('.bull-card').forEach(c => c.classList.toggle('selected', c.dataset.id === id));
+}
+
+// Render Routes
+function renderRoutes() {
+  document.getElementById('routeList').innerHTML = routes.map(r =>
+    `<div class="route-item" data-id="${r.id}" onclick="selectRoute('${r.id}')">
+      <input type="radio" name="route" ${selectedRoute===r.id?'checked':''}>
+      <div class="route-info">
+        <div class="route-name">${r.name}</div>
+        <div class="route-desc">${r.desc}</div>
+      </div>
+      <div class="route-price">${r.price===0?'免費':'+$'+r.price}</div>
+    </div>`
+  ).join('');
+}
+
+function selectRoute(id) {
+  selectedRoute = id;
+  renderRoutes();
+}
+
+// Render Time Slots
+function renderTimeSlots() {
+  document.getElementById('timeSlots').innerHTML = timeSlots.map(t =>
+    `<div class="time-slot ${t.avail===0?'full':''} ${selectedTime===t.time?'selected':''}"
+      onclick="${t.avail>0?`selectTime('${t.time}')`:''}"
+      title="${t.avail===0?'已滿':('剩餘 '+t.avail+' 隻牛')}">
+      ${t.label}<br><span style="font-size:.7rem;opacity:.7">${t.avail===0?'已滿':'餘 '+t.avail+' 牛'}</span>
+    </div>`
+  ).join('');
+}
+
+function selectTime(t) {
+  selectedTime = t;
+  renderTimeSlots();
+}
+
+// Render Insurance
+function renderInsurance() {
+  document.getElementById('insuranceOptions').innerHTML = insurances.map(ins =>
+    `<div class="ins-item" onclick="selectInsurance('${ins.id}')">
+      <input type="radio" name="insurance" ${selectedInsurance===ins.id?'checked':''}>
+      <label><strong>${ins.name}</strong><br><span style="font-size:.8rem;opacity:.7">${ins.desc}</span></label>
+      <div class="ins-price">${ins.price===0?'免費':'+$'+ins.price}</div>
+    </div>`
+  ).join('');
+}
+
+function selectInsurance(id) {
+  selectedInsurance = id;
+  renderInsurance();
+}
+
+// Set default date
+function setDefaultDate() {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  document.getElementById('date').value = d.toISOString().split('T')[0];
+  document.getElementById('date').min = d.toISOString().split('T')[0];
+}
+
+// Submit
+function submitBooking() {
+  const name = document.getElementById('name').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const weight = document.getElementById('weight').value;
+  const date = document.getElementById('date').value;
+  const exp = document.getElementById('exp');
+  const weather = document.getElementById('weather');
+
+  const errors = [];
+  if (!selectedBull) errors.push('請選擇坐騎');
+  if (!selectedRoute) errors.push('請選擇路線');
+  if (!selectedTime) errors.push('請選擇時段');
+  if (!name) errors.push('請輸入姓名');
+  if (!phone) errors.push('請輸入電話');
+  if (!date) errors.push('請選擇日期');
+
+  if (errors.length) { alert('🐂 ' + errors.join('\n🐂 ')); return; }
+
+  const bull = bulls.find(b => b.id === selectedBull);
+  const route = routes.find(r => r.id === selectedRoute);
+  const ins = insurances.find(i => i.id === selectedInsurance);
+  const total = bull.price + route.price + ins.price + (weather.value === 'typhoon' ? 200 : 0);
+
+  const ticketNo = 'TM-' + Date.now().toString(36).toUpperCase() + '-MOO';
+  document.getElementById('ticketId').textContent = '預約編號：' + ticketNo;
+
+  document.getElementById('modalDetails').innerHTML = `
+    <span>騎士：</span>${name}<br>
+    <span>坐騎：</span>${bull.emoji} ${bull.name}<br>
+    <span>路線：</span>${route.name.split('：')[0]}<br>
+    <span>日期：</span>${date}<br>
+    <span>時段：</span>${selectedTime}<br>
+    <span>經驗：</span>${exp.options[exp.selectedIndex].text}<br>
+    <span>天氣：</span>${weather.options[weather.selectedIndex].text}<br>
+    <span>保險：</span>${ins.name}<br>
+    <span>總費用：</span><span style="font-size:1.3rem">$${total}</span>
+  `;
+
+  document.getElementById('modal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+}
+
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// Init
+renderStats();
+renderBulls();
+renderRoutes();
+renderTimeSlots();
+renderInsurance();
+setDefaultDate();
+</script>
+
+</body>
+</html>
